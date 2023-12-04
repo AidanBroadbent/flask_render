@@ -1,0 +1,52 @@
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+</style>
+<canvas id="myCanvas" style="width:100vw;height:100vh;"></canvas>
+<script>
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const frameCount = 71;
+    let frames = [];
+    let loadedFrames = 0;
+
+    function preloadImages() {
+        for (let i = 0; i <= frameCount; i++) {
+            let img = new Image();
+            img.src = `/frames/MicronSSD-Animation-1_864${String(i).padStart(2, '0')}.png`;
+            img.onload = () => {
+                loadedFrames++;
+                if (loadedFrames === frameCount + 1) {
+                    attachScrollListener();
+                    updateFrame(0); // Draw the first frame once all images are loaded
+                }
+            };
+            frames[i] = img;
+        }
+    }
+
+    function updateFrame(frameNumber) {
+        ctx.drawImage(frames[frameNumber], 0, 0, canvas.width, canvas.height);
+    }
+
+    function attachScrollListener() {
+        let currentFrame = 0;
+        window.addEventListener('wheel', (e) => {
+            if (e.deltaY < 0) {
+                currentFrame = Math.max(currentFrame - 1, 0);
+            } else {
+                currentFrame = Math.min(currentFrame + 1, frameCount);
+            }
+            updateFrame(currentFrame);
+        });
+    }
+
+    preloadImages();
+
+</script>
